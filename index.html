@@ -1,0 +1,163 @@
+import { useState } from "react";
+import {
+  MessageSquare,
+  GraduationCap,
+  Users,
+  Brain,
+  Bot,
+  Menu,
+  X,
+} from "lucide-react";
+import logoImage from "figma:asset/596b9a041c4e6a36f2b868cabd020f0b4f5c20bf.png";
+import { Login } from "./components/Login";
+import { ChatComunitario } from "./components/ChatComunitario";
+import { ClasesRecreativas } from "./components/ClasesRecreativas";
+import { AsesoriaProfesional } from "./components/AsesoriaProfesional";
+import { JuegosCognitivos } from "./components/JuegosCognitivos";
+import { ChatbotIA } from "./components/ChatbotIA";
+
+type Section =
+  | "chat"
+  | "clases"
+  | "asesoria"
+  | "juegos"
+  | "chatbot";
+
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeSection, setActiveSection] =
+    useState<Section>("chat");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Show login screen if not logged in
+  if (!isLoggedIn) {
+    return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
+
+  const sections = [
+    {
+      id: "chat" as Section,
+      name: "Chat Comunitario",
+      icon: MessageSquare,
+    },
+    {
+      id: "clases" as Section,
+      name: "Clases Recreativas",
+      icon: GraduationCap,
+    },
+    {
+      id: "asesoria" as Section,
+      name: "Asesoría Profesional",
+      icon: Users,
+    },
+    {
+      id: "juegos" as Section,
+      name: "Juegos Cognitivos",
+      icon: Brain,
+    },
+    {
+      id: "chatbot" as Section,
+      name: "Chatbot con IA",
+      icon: Bot,
+    },
+  ];
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case "chat":
+        return <ChatComunitario />;
+      case "clases":
+        return <ClasesRecreativas />;
+      case "asesoria":
+        return <AsesoriaProfesional />;
+      case "juegos":
+        return <JuegosCognitivos />;
+      case "chatbot":
+        return <ChatbotIA onNavigate={setActiveSection} />;
+      default:
+        return <ChatComunitario />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+      {/* Header */}
+      <header className="bg-white shadow-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img
+              src={logoImage}
+              alt="Recrea Andar"
+              className="h-12"
+              style={{ mixBlendMode: "multiply" }}
+            />
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+          >
+            {menuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+
+          {/* Desktop navigation */}
+          <nav className="hidden lg:flex gap-2">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                    activeSection === section.id
+                      ? "bg-blue-500 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{section.name}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Mobile navigation */}
+        {menuOpen && (
+          <nav className="lg:hidden border-t border-gray-200 bg-white">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => {
+                    setActiveSection(section.id);
+                    setMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-6 py-3 transition-all ${
+                    activeSection === section.id
+                      ? "bg-blue-500 text-white"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{section.name}</span>
+                </button>
+              );
+            })}
+          </nav>
+        )}
+      </header>
+
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {renderSection()}
+      </main>
+    </div>
+  );
+}
